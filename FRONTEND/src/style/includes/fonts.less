@@ -1,0 +1,75 @@
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300,600,600italic,400italic,300italic);
+
+// weight
+.r {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 500;
+}
+.b {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 700;
+}
+.l {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 300;
+}
+
+h1 {
+    .b;
+    display: inline-block;
+    font-size: 4.286rem; /* 60/14 */
+    text-align: center;
+    padding: 0 15px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid currentColor;
+
+    .screen-m({
+        font-size: 3rem; /* 42/14 */
+    });
+}
+
+h4 {
+    .r;
+    font-size: 1.714rem; /* 24/14 */
+    line-height: 1.667em; /* 40/24 */
+    margin-bottom: 18px;
+}
+
+h5 {
+    .r;
+    font-size: 1.286rem; /* 18/14 */
+    line-height: 1.5em; /* 24/16 */
+    margin-bottom: 16px;
+}
+
+.form-text {
+    font-size: 1.714rem; /* 24/14 */
+    line-height: 1.667em; /* 40/24 */
+    .screen-m({
+        font-size: 1.429rem; /* 20/14 */
+    });
+}
+
+.info-text {
+    font-size: 1.429rem; /* 20/14 */
+    line-height: 1.5em; /* 30/20 */
+    .screen-m({
+        font-size: 1.286rem; /* 18/14 */
+    });
+}
+
+.text {
+    font-size: 1rem;
+    line-height: 1.714em; /* 24/14 */
+}
+
+p {
+    .text;
+    margin-bottom: 32px;
+}
+
+.description {
+    font-size: 1.1rem;
+    line-height: 1.7em; /* 24/14 */
+    .l;
+}

@@ -1,0 +1,64 @@
+//ПК с маленьким разрешением, большие планшеты в пейзажной ориентации
+@m_tl_min: 980px;
+@m_tl_max: 1199px;
+.screen-small-pc(@rules) {
+    // @media (min-width: @m_tl_min) and (max-width: @m_tl_max) {
+    @media (max-width: @m_tl_max) {
+        @rules();
+    }
+}
+
+// tablet
+@m_tp_min: 768px;
+@m_tp_max: 1025px;
+.screen-t(@rules) {
+    @media (min-width: @m_tp_min) and (max-width: @m_tp_max) and (orientation: portrait) {
+        @rules();
+    }
+}
+.screen-mt(@rules) {
+    @media (max-width: @m_tp_max) {
+        @rules();
+    }
+}
+
+// tablet small
+@m_ml_min: 571px;
+@m_ml_max: 767px;
+.screen-ts(@rules) {
+    @media (min-width: @m_ml_min) and (max-width: @m_ml_max) {
+        @rules();
+    }
+}
+
+// tablet small + tablet
+.screen-tst(@rules) {
+    @media (min-width: @m_ml_min) and (max-width: @m_tp_max) {
+        @rules();
+    }
+}
+
+
+// mobile + tablet small
+.screen-mts(@rules) {
+    @media (max-width: @m_ml_max) {
+        @rules();
+    }
+}
+
+// смартфоны
+// body.adaptive
+@m_mp_max: 570px;
+.screen-m(@rules) {
+    @media (max-width: @m_mp_max) {
+        @rules();
+    }
+}
+
+// недосмартфоны
+@m_mps_max: 350px;
+.screen-ms(@rules) {
+    @media (max-width: @m_mps_max) {
+        @rules();
+    }
+}
