@@ -139,6 +139,39 @@ img {
         width: 86%;
     });
 }
+
+.socials-holder {
+    li {
+        width: 28px;
+        height: 28px;
+        margin-left: 48px;
+        opacity: .4;
+        padding: 0 !important;
+        transition: opacity 150ms linear;
+
+        .screen-small-pc({
+            margin-left: 24px;
+        });
+
+        &:first-child {
+            margin-left: 0 !important;
+        }
+
+        &:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
 form {
     button,
     input,
@@ -187,7 +220,8 @@ form {
         .button(@button1);
 
         .screen-m({
-            margin: 12px 0 0;
+            margin: 32px 0 0;
+            font-size: 18px;
         });
     }
 
@@ -197,16 +231,18 @@ form {
         color: @green;
     }
     &.sended {
-        .form-field,
-        .form-submit {
-            display: none;
-        }
+        // .form-field,
+        // .form-submit {
+        //     display: none;
+        // }
 
         .danke {
+            padding: 15px 0;
             display: block;
         }
     }
 }
+
 .button(@color) {
     position: relative;
 
@@ -219,17 +255,23 @@ form {
         border: 0;
         border-radius: 2px;
         background: @color;
+        // color: contrast(@color);
+        color: inherit;
         z-index: 1;
         cursor: pointer;
         transition: transform 80ms linear;
         text-decoration: none;
-        color: inherit;
         padding: 11px 28px;
         text-align: center;
         font-weight: bold;
 
         .screen-small-pc({
             padding: 11px 22px;
+        });
+
+        .screen-m({
+            margin: 32px 0 0;
+            font-size: 18px;
         });
     }
     &:before {
@@ -320,6 +362,12 @@ form {
 
         .info {
             text-align: center;
+            padding: 30px;
+
+            .info-wrapper {
+                margin: 0 auto;
+            }
+
             .btn-wrap {
                 margin-top: 14px !important;
             }
@@ -335,7 +383,11 @@ form {
         vertical-align: top;
     }
     .info {
-        padding: 40px 32px;
+        padding: 40px 60px;
+    }
+
+    .info-wrapper {
+        max-width: 440px;
     }
 }
 

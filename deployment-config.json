@@ -1,0 +1,9 @@
+{
+    "type": "sftp",
+    "host": "server56.webgo24.de",
+    "username": "web160",
+    "password": "besserfleisch123",
+    "port": 22,
+    "remotePath": "/home/www/besserfleisch.de/",
+    "uploadOnSave": true
+}
