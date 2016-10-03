@@ -3,7 +3,7 @@
 			        <div class="container">
 							<?php //echo do_shortcode('[contact-form-7 id="421" title="Footer email form"]'); ?>
 
-							<form action="//besserfleisch.us14.list-manage.com/subscribe/post?u=fa951d9bc9015dfe7fd775c90&amp;id=3ebe0260f5" method="post" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+							<form action="//besserfleisch.us14.list-manage.com/subscribe/post?u=fa951d9bc9015dfe7fd775c90&amp;id=3ebe0260f5" method="POST" name="mc-embedded-subscribe-form" class="validate ajax-send" target="_blank" novalidate>
 								<span class="form-text">
 									Wir halten dich gerne auf dem Laufenden!
 								</span>
@@ -50,7 +50,7 @@
 									</a>
 								</li>
 								<!-- <li class="tw">
-									<a href="https://tweetter.com">
+									<a href="https://twitter.com/">
 										<svg width="28" height="28" viewBox="0 0 29 24" xmlns="http://www.w3.org/2000/svg" id="icon"><path d="M28.375 3.443c-1.03.457-2.138.766-3.3.905a5.76 5.76 0 0 0 2.527-3.178 11.52 11.52 0 0 1-3.648 1.394A5.738 5.738 0 0 0 19.76.75a5.744 5.744 0 0 0-5.595 7.053A16.31 16.31 0 0 1 2.325 1.8a5.72 5.72 0 0 0-.778 2.89 5.742 5.742 0 0 0 2.555 4.78A5.715 5.715 0 0 1 1.5 8.752v.072a5.747 5.747 0 0 0 4.608 5.633 5.755 5.755 0 0 1-2.594.1 5.75 5.75 0 0 0 5.366 3.988 11.526 11.526 0 0 1-7.135 2.46c-.464 0-.92-.028-1.37-.08a16.263 16.263 0 0 0 8.806 2.58c10.567 0 16.345-8.754 16.345-16.345 0-.25-.005-.497-.016-.744a11.65 11.65 0 0 0 2.865-2.973" fill="currentColor" fill-rule="evenodd"/></svg>
 									</a>
 								</li> -->

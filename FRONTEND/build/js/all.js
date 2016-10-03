@@ -1,2 +1,465 @@
-!function(){for(var e=0,t=["ms","moz","webkit","o"],i=0;i<t.length&&!window.requestAnimationFrame;++i)window.requestAnimationFrame=window[t[i]+"RequestAnimationFrame"],window.cancelAnimationFrame=window[t[i]+"CancelAnimationFrame"]||window[t[i]+"CancelRequestAnimationFrame"];window.requestAnimationFrame||(window.requestAnimationFrame=function(t,i){var a=(new Date).getTime(),n=Math.max(0,16-(a-e)),o=window.setTimeout(function(){t(a+n)},n);return e=a+n,o}),window.cancelAnimationFrame||(window.cancelAnimationFrame=function(e){clearTimeout(e)})}(),!function(e){e.svg4everybody=function(){function t(e,t){if(t){var i=document.createDocumentFragment(),a=t.getAttribute("viewBox");e.setAttribute("viewBox",a);for(var n=t.cloneNode(!0);n.childNodes.length;)i.appendChild(n.firstChild);e.appendChild(i)}}function i(e){e.onreadystatechange=function(){if(4===e.readyState){var i=e._cachedDocument;i||(i=e._cachedDocument=document.implementation.createHTMLDocument(""),i.body.innerHTML=e.responseText,e._cachedTarget={}),e._embeds.splice(0).map(function(a){var n=e._cachedTarget[a.id];n||(n=e._cachedTarget[a.id]=i.getElementById(a.id)),t(a.svg,n)})}},e.onreadystatechange()}function a(a){function n(){for(var e=0;e<u.length;){var a=u[e],s=a.parentNode;if(s&&/svg/i.test(s.nodeName)){var l=a.getAttribute("xlink:href");if(o&&(!r.validate||r.validate(l,s,a))){s.removeChild(a);var d=l.split("#"),h=d.shift(),g=d.join("#");if(h.length){var f=c[h];f||(f=c[h]=new XMLHttpRequest,f.open("GET",h),f.send(),f._embeds=[]),f._embeds.push({svg:s,id:g}),i(f)}else t(s,document.getElementById(g))}}else++e}m(n,67)}var o,r=Object(a),s=/\bTrident\/[567]\b|\bMSIE (?:9|10)\.0\b/,l=/\bAppleWebKit\/(\d+)\b/,d=/\bEdge\/(\d+)\.(\d+)\b/;o="polyfill"in r?r.polyfill:s.test(navigator.userAgent)||d.test(navigator.userAgent)||(navigator.userAgent.match(l)||[])[1]<537;var c={},m=e.requestAnimationFrame||setTimeout,u=document.getElementsByTagName("use");o&&n()}return a}()}(window),!function(e,t){t(function(){BF.init()})}(window,jQuery),window.BF={init:function(){var e=navigator.userAgent;this.is_touch="ontouchstart"in window,this.is_webkit=e.match(/webkit/i),this.is_firefox=e.match(/gecko/i),this.is_newer_ie=e.match(/msie (9|([1-9][0-9]))/i),this.is_older_ie=e.match(/msie/i)&&!this.is_newer_ie,this.is_ancient_ie=e.match(/msie 6/i),this.is_ie=this.is_ancient_ie||this.is_older_ie||this.is_newer_ie,this.is_mobile_ie=e.indexOf("IEMobile")!==-1,this.is_mobile=e.match(/mobile/i),this.is_desktop=!this.is_mobile,this.is_OSX=!!e.match(/(iPad|iPhone|iPod|Macintosh)/g),this.is_EDGE=/Edge\/12./i.test(e),this.is_desktop&&this.parallax(),this.events(),this.vendor()},events:function(){var e=$(".b_header"),t=e.find(".menu-holder"),i=e.hasClass("overflow");if(i){var a=$(".b_cover").outerHeight()||0;$(window).on("scroll",function(){var t=window.pageYOffset;e.toggleClass("floating",t>=Math.max(a-300,0)),e.toggleClass("animate",t>=Math.max(a-200,0)),e.toggleClass("show",t>=Math.max(a,0))})}else e.addClass("floating show");$("body").on("click touchstart",function(e){$(e.target).is(".burger")?(e.preventDefault(),t.toggleClass("show")):0===$(e.target).closest(".b_header").length&&t.removeClass("show")}),$(".b_gallery").find(".gallery-wrap").on("click",".show-more",function(e){e.preventDefault(),$(e.currentTarget).closest(".gallery-wrap").toggleClass("extend")}),$("form").on("submit",function(e){e.preventDefault();var t=!1,i=$(e.currentTarget),a=i.find(".form-field");if(a.removeClass("error"),a.each(function(e,i){var a=$(i),n=$(i).data("validate"),o=!1,r=a.find("input, textarea").val();if(n)switch(n){case"email":o=r.match(/.+@.+\..+/i);break;default:o=r.length>0}else o=!0;if(!o)return a.addClass("error"),t=!0,!1}),!t){var n=i.serialize(),o=$.ajax({url:i.attr("action"),type:"GET",dataType:"json",data:n+"&is_ajax=true"});o.always(function(e){i.get(0).reset(),i.addClass("sended")})}})},vendor:function(){var e=this;svg4everybody(),$(".slider").lightSlider({adaptiveHeight:!0,item:1,slideMargin:0,loop:!0,auto:!0,pause:1e4,controls:!1,pager:!0,galleryMargin:0,enableDrag:!1}),$(".lg-init").lightGallery({cssEasing:"cubic-bezier(0.25, 0, 0.25, 1)",preload:4,download:!1}),e.is_desktop&&$("#video-bg").YTPlayer()},parallax:function(){function e(){var e=(window.pageYOffset-a)*n;i.style.transform="translate3d(0,"+e+"px,0)"}var t=$('.bg[data-parallax="true"]'),i=t[0];if(i){var a=t.offset().top,n=.3;!function o(){e(),requestAnimationFrame(o)}()}}};
+/* jshint esnext: true, esversion: 6 */
+
+// requestAnimationFrame
+(function () {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) window.requestAnimationFrame = function (callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function () {
+            callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    };
+
+    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function (id) {
+        clearTimeout(id);
+    };
+})();
+
+/*! svg4everybody v2.0.3 | github.com/jonathantneal/svg4everybody */
+!function (window) {
+    window.svg4everybody = function () {
+        function embed(svg, target) {
+            // if the target exists
+            if (target) {
+                // create a document fragment to hold the contents of the target
+                var fragment = document.createDocumentFragment(),
+                    viewBox = target.getAttribute("viewBox");
+                // conditionally set the viewBox on the svg
+                svg.setAttribute("viewBox", viewBox);
+
+                // copy the contents of the clone into the fragment
+                for ( // clone the target
+                var clone = target.cloneNode(!0); clone.childNodes.length;) {
+                    fragment.appendChild(clone.firstChild);
+                }
+                // append the fragment into the svg
+                svg.appendChild(fragment);
+            }
+        }
+
+        function loadreadystatechange(xhr) {
+            // listen to changes in the request
+            xhr.onreadystatechange = function () {
+                // if the request is ready
+                if (4 === xhr.readyState) {
+                    // get the cached html document
+                    var cachedDocument = xhr._cachedDocument;
+                    // ensure the cached html document based on the xhr response
+                    cachedDocument || (cachedDocument = xhr._cachedDocument = document.implementation.createHTMLDocument(""), cachedDocument.body.innerHTML = xhr.responseText, xhr._cachedTarget = {}), // clear the xhr embeds list and embed each item
+                    xhr._embeds.splice(0).map(function (item) {
+                        // get the cached target
+                        var target = xhr._cachedTarget[item.id];
+                        // ensure the cached target
+                        target || (target = xhr._cachedTarget[item.id] = cachedDocument.getElementById(item.id)),
+                        // embed the target into the svg
+                        embed(item.svg, target);
+                    });
+                }
+            }, // test the ready state change immediately
+            xhr.onreadystatechange();
+        }
+
+        function svg4everybody(rawopts) {
+            function oninterval() {
+                // while the index exists in the live <use> collection
+                for ( // get the cached <use> index
+                var index = 0; index < uses.length;) {
+                    // get the current <use>
+                    var use = uses[index],
+                        svg = use.parentNode;
+                    if (svg && /svg/i.test(svg.nodeName)) {
+                        var src = use.getAttribute("xlink:href");
+                        if (polyfill && (!opts.validate || opts.validate(src, svg, use))) {
+                            // remove the <use> element
+                            svg.removeChild(use);
+                            // parse the src and get the url and id
+                            var srcSplit = src.split("#"),
+                                url = srcSplit.shift(),
+                                id = srcSplit.join("#");
+                            // if the link is external
+                            if (url.length) {
+                                // get the cached xhr request
+                                var xhr = requests[url];
+                                // ensure the xhr request exists
+                                xhr || (xhr = requests[url] = new XMLHttpRequest(), xhr.open("GET", url), xhr.send(), xhr._embeds = []), // add the svg and id as an item to the xhr embeds list
+                                xhr._embeds.push({
+                                    svg: svg,
+                                    id: id
+                                }), // prepare the xhr ready state change event
+                                loadreadystatechange(xhr);
+                            } else {
+                                // embed the local id into the svg
+                                embed(svg, document.getElementById(id));
+                            }
+                        }
+                    } else {
+                        // increase the index when the previous value was not "valid"
+                        ++index;
+                    }
+                }
+                // continue the interval
+                requestAnimationFrame(oninterval, 67);
+            }
+            var polyfill,
+                opts = Object(rawopts),
+                newerIEUA = /\bTrident\/[567]\b|\bMSIE (?:9|10)\.0\b/,
+                webkitUA = /\bAppleWebKit\/(\d+)\b/,
+                olderEdgeUA = /\bEdge\/(\d+)\.(\d+)\b/;
+            polyfill = "polyfill" in opts ? opts.polyfill : newerIEUA.test(navigator.userAgent) || olderEdgeUA.test(navigator.userAgent) || (navigator.userAgent.match(webkitUA) || [])[1] < 537;
+            // create xhr requests object
+            var requests = {},
+                requestAnimationFrame = window.requestAnimationFrame || setTimeout,
+                uses = document.getElementsByTagName("use");
+            // conditionally start the interval if the polyfill is active
+            polyfill && oninterval();
+        }
+        return svg4everybody;
+    }();
+}(window);
+
+///
+
+!function (window, $) {
+    $(function () {
+        BF.init();
+    });
+
+    window.BF = {
+        init: function () {
+            var ua = navigator.userAgent;
+            this.is_touch = 'ontouchstart' in window; // это тач устройство?
+            this.is_webkit = ua.match(/webkit/i);
+            this.is_firefox = ua.match(/gecko/i);
+            this.is_newer_ie = ua.match(/msie (9|([1-9][0-9]))/i);
+            this.is_older_ie = ua.match(/msie/i) && !this.is_newer_ie;
+            this.is_ancient_ie = ua.match(/msie 6/i);
+            this.is_ie = this.is_ancient_ie || this.is_older_ie || this.is_newer_ie;
+            this.is_mobile_ie = ua.indexOf('IEMobile') !== -1;
+            this.is_mobile = ua.match(/mobile/i);
+            this.is_desktop = !this.is_mobile;
+            this.is_OSX = ua.match(/(iPad|iPhone|iPod|Macintosh)/g) ? true : false;
+            this.is_EDGE = /Edge\/12./i.test(ua);
+
+            if (this.is_desktop) {
+                this.parallax();
+            }
+
+            this.form.init();
+            this.events();
+            this.vendor();
+        },
+
+        events: function () {
+            var self = this;
+
+            // Scroll
+            var $header = $('.b_header');
+            var $menu = $header.find('.menu-holder');
+
+            var headerOverflow = $header.hasClass('overflow');
+
+            if (headerOverflow) {
+                var coverH = $('.b_cover').outerHeight() || 0;
+                $(window).on('scroll', function () {
+                    var st = window.pageYOffset;
+                    $header.toggleClass('floating', st >= Math.max(coverH - 300, 0));
+                    $header.toggleClass('animate', st >= Math.max(coverH - 200, 0));
+                    $header.toggleClass('show', st >= Math.max(coverH, 0));
+                });
+            } else {
+                $header.addClass('floating show');
+            }
+
+            // burger
+            $('body').on('click touchstart', function (e) {
+                if ($(e.target).is('.burger')) {
+                    e.preventDefault();
+                    $menu.toggleClass('show');
+                } else if ($(e.target).closest('.b_header').length === 0) {
+                    $menu.removeClass('show');
+                }
+            });
+
+            // gallery
+            $('.gallery-wrap').on('click', '.show-more', function (e) {
+                e.preventDefault();
+
+                $(e.currentTarget).closest('.gallery-wrap').toggleClass('extend');
+            });
+
+            $('.spoilers').on('click', '.spoiler > .title', function (e) {
+                $(e.currentTarget).closest('.spoiler').toggleClass('extend');
+            });
+
+            // tarifs
+            $('.tarif-card').on('click', '.btn', function (e) {
+                e.preventDefault();
+                var modal = $(e.currentTarget).attr('href');
+
+                BF.modal.open(modal);
+            });
+
+            // modals
+            $('.modal-list').on('click.close-by-button', 'a.close, a.cancel', function (e) {
+                e.preventDefault();
+                BF.modal.close();
+            });
+
+            $('.modal-list').on('click.close-on-overlay', function (e) {
+                if (e.target == e.currentTarget) {
+                    e.preventDefault();
+                    BF.modal.close();
+                }
+            });
+        },
+
+        form: {
+            init: function () {
+                $('form').on('click', '.form-field', function (e) {
+                    $(e.currentTarget).removeClass('error');
+                });
+
+                // form ajax submit
+                $('form.ajax-send').on('submit', function (e) {
+                    e.preventDefault();
+
+                    var hasError = false;
+                    var $form = $(e.currentTarget);
+
+                    hasError = BF.form.check($form);
+
+                    if (hasError) {
+                        e.stopPropagation();
+                        return false;
+                    }
+
+                    var form_data = $form.serialize();
+
+                    // AJAX
+                    var req = $.ajax({
+                        url: $form.attr('action'),
+                        type: $form.attr('method'),
+                        dataType: 'json',
+                        data: form_data
+                    });
+
+                    req.always(function (data) {
+                        $form.get(0).reset();
+                        $form.addClass('sended');
+                    });
+                });
+
+                // form order send form (contact form 7)
+                // steps
+                $('.modal.form-order').on('click', 'a.select-step', e => {
+                    var step = $(e.currentTarget).attr('href').replace('#', '');
+
+                    var $form = $(e.currentTarget).closest('form');
+
+                    if (step == 'next') {
+                        BF.form.set_fields($form);
+                        var hasError = BF.form.check($form);
+                        if (hasError) return;
+
+                        $form.addClass('is-step-2').removeClass('is-step-1');
+                    } else {
+                        $form.addClass('is-step-1').removeClass('is-step-2');
+                    }
+                });
+
+                $('.modal.form-order').on('submit', 'form', function (e) {
+                    var $modal = $(e.currentTarget).closest('.modal');
+
+                    setTimeout(function () {
+                        BF.modal.open('order-done');
+                    }, 1000);
+                });
+            },
+
+            set_fields: function ($form) {
+                var $done_fields = $form.find('.field-list');
+                var form_extended = $form.find('#form-extend').attr('checked');
+
+                $done_fields.empty();
+                $form.find('input, textarea').each(function (index, field) {
+                    var is_group = false;
+
+                    var $field = $(field);
+                    var placeholder;
+                    var text;
+
+                    // is group
+                    if ($field.closest('.form-field-group')[0]) {
+                        var $group = $field.closest('.form-field-group');
+                        if ($group.attr('data-group-done')) return;
+                        $group.attr('data-group-done', true);
+
+                        is_group = true;
+                        placeholder = $group.find('label').text();
+
+                        if (!form_extended && $group.attr('data-empty') == 'true') {
+                            text = 'gleiche wie oben';
+                        } else {
+                            text = [];
+                            $group.find('input, textarea').each(function (index, item) {
+                                text.push($(item).val() || '-');
+                            });
+                            text = text.join(', ');
+                        }
+                    } else {
+                        placeholder = $field.attr('placeholder');
+
+                        if (!form_extended && $field.closest('.form-field').attr('data-empty') == 'true') {
+                            text = 'gleiche wie oben';
+                        } else {
+                            text = $field.val() || '-';
+                        }
+                    }
+
+                    if (placeholder) {
+                        var $item = $(['<div class="field">', '<div class="title"></div>', '<div class="text"></div>', '</div>'].join(''));
+
+                        $item.find('.title').text(placeholder);
+                        $item.find('.text').text(text);
+                        $done_fields.append($item);
+                    }
+                });
+            },
+
+            check: function ($form) {
+                var result = false;
+                var $fields = $form.find('.form-field');
+                $fields.removeClass('error');
+
+                $fields.each(function (index, field) {
+                    var $field = $(field);
+                    var validate = $(field).data('validate');
+                    var correct = false;
+                    var value = $field.find('input, textarea').val();
+
+                    if (validate) {
+                        switch (validate) {
+                            case 'email':
+                                correct = value.match(/.+@.+\..+/i);
+                                break;
+                            case 'checked':
+                                correct = !!$field.find('input[type="checkbox"]').attr('checked');
+                                break;
+                            default:
+                                correct = value.length > 0;
+                        }
+                    } else {
+                        correct = true;
+                    }
+
+                    if (!correct) {
+                        $field.addClass('error');
+                        result = true;
+                    }
+                });
+
+                return result;
+            }
+        },
+
+        modal: {
+            open: function (modal) {
+                this.close();
+
+                var $modal = $('.modal-list').find(modal);
+
+                if (!$modal.length) return;
+
+                $('body').css('overflow', 'hidden');
+                $('.modal-list').addClass('overlay');
+                $modal.addClass('show');
+            },
+
+            close: function () {
+                var $modal = $('.modal-list').find('.modal');
+
+                $('body').css('overflow', '');
+                $modal.removeClass('show done');
+                $modal.find('form').removeClass('is-step-1 is-step-2');
+
+                $('.modal-list').removeClass('overlay');
+
+                $modal.find('form .form-field').removeClass('error');
+            }
+        },
+
+        vendor: function () {
+            var self = this;
+
+            svg4everybody();
+
+            $('.b_slider .slider').lightSlider({
+                adaptiveHeight: true,
+                item: 1,
+                slideMargin: 0,
+                loop: true,
+                auto: true,
+                pause: 10000,
+                controls: false,
+                pager: true,
+                galleryMargin: 0,
+                enableDrag: false
+            });
+
+            var angeslider = $('.b_ange_slider .slider').lightSlider({
+                adaptiveHeight: true,
+                item: 1,
+                slideMargin: 0,
+                controls: false,
+                pager: false,
+                enableDrag: true
+            });
+
+            $('.slider-preview').on('click', 'li', function (e) {
+                var index = $(e.currentTarget).index();
+                if (angeslider) {
+                    angeslider.goToSlide(index);
+                }
+            });
+
+            $('.lg-init').lightGallery({
+                cssEasing: 'cubic-bezier(0.25, 0, 0.25, 1)',
+                preload: 4,
+                download: false
+            });
+
+            if (self.is_desktop) {
+                $('#video-bg').YTPlayer();
+            }
+        },
+
+        parallax: function () {
+            var $bg = $('.bg[data-parallax="true"]');
+            var bg = $bg[0];
+
+            if (!bg) return;
+            var start = $bg.offset().top;
+            var factor = 0.3;
+
+            (function loop() {
+                animateParallax();
+                requestAnimationFrame(loop);
+            })();
+
+            function animateParallax() {
+                var y = (window.pageYOffset - start) * factor;
+                bg.style.transform = "translate3d(0," + y + "px,0)";
+            }
+        }
+    };
+}(window, jQuery);
 //# sourceMappingURL=all.js.map

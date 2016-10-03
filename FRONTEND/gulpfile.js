@@ -85,7 +85,7 @@ gulp.task('js:build', function () {
         .pipe(sourcemaps.init())
         .pipe(babel())
         .pipe(rigger())
-        .pipe(uglify())
+        // .pipe(uglify())
         .pipe(concat("all.js"))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(path.build.js))

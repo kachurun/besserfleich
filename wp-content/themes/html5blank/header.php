@@ -40,8 +40,8 @@
 
 	<meta property="og:url"           content="http://besserfleisch.de/" />
 	<meta property="og:type"          content="website" />
-	<meta property="og:title"         content="Besserfleisch" />
-	<meta property="og:description"   content="Описание бессерфлейча" />
+	<meta property="og:title"         content="Saftiges Rindfleisch aus Weidehaltung" />
+	<meta property="og:description"   content="Einfach Hof anschauen und online bestellen" />
 	<meta property="og:image"         content="http://besserfleisch.de/wp-content/uploads/2016/07/160726_hh_0260.jpg" />
 
 	<!--[if lt IE 9]>

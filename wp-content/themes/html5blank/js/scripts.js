@@ -157,6 +157,7 @@
                 this.parallax();
             }
 
+            this.form.init();
             this.events();
             this.vendor();
         },
@@ -194,17 +195,181 @@
             });
 
             // gallery
-            $('.b_gallery').find('.gallery-wrap').on('click', '.show-more', function(e){
+            $('.gallery-wrap').on('click', '.show-more', function(e){
                 e.preventDefault();
 
                 $(e.currentTarget).closest('.gallery-wrap').toggleClass('extend');
             });
 
-            $('form').on('submit', function(e) {
-                e.preventDefault();
+            $('.spoilers').on('click', '.spoiler > .title', function(e){
+                $(e.currentTarget).closest('.spoiler').toggleClass('extend');
+            });
 
-                var hasError = false;
-                var $form = $(e.currentTarget);
+            // tarifs
+            $('.tarif-card').on('click', '.btn', function(e) {
+                e.preventDefault();
+                var modal = $(e.currentTarget).attr('href');
+
+                BF.modal.open(modal);
+            });
+
+            // modals
+            $('.modal-list').on('click.close-by-button', 'a.close, a.cancel', function(e) {
+                e.preventDefault();
+                BF.modal.close();
+            });
+
+            $('.modal-list').on('click.close-on-overlay', function(e) {
+                if (e.target == e.currentTarget) {
+                    e.preventDefault();
+                    BF.modal.close();
+                }
+            });
+        },
+
+        form: {
+            init: function() {
+                $('form').on('click', '.form-field', function(e) {
+                    $(e.currentTarget).removeClass('error');
+                });
+
+                // form ajax submit
+                $('form.ajax-send').on('submit', function(e) {
+                    e.preventDefault();
+
+                    var hasError = false;
+                    var $form = $(e.currentTarget);
+
+                    hasError = BF.form.check($form);
+
+                    if (hasError) {
+                        e.stopPropagation();
+                        return false;
+                    }
+
+                    var form_data = $form.serialize();
+
+                    // AJAX
+                    var req = $.ajax(
+                    {
+                        url: $form.attr('action'),
+                        type: $form.attr('method'),
+                        dataType: 'json',
+                        data: form_data
+                    });
+
+                    req.always(function(data) {
+                        $form.get(0).reset();
+                        $form.addClass('sended');
+                    });
+                });
+
+                // form order send form (contact form 7)
+                // steps
+                $('.modal.form-order').on('click', 'a.select-step', e => {
+                    var step = $(e.currentTarget).attr('href').replace('#', '');
+
+                    var $form = $(e.currentTarget).closest('form');
+
+                    if (step == 'next') {
+                        BF.form.set_fields($form);
+                        var hasError = BF.form.check($form);
+                        if (hasError) return;
+
+                        $form.addClass('is-step-2').removeClass('is-step-1');
+                    } else {
+                        $form.addClass('is-step-1').removeClass('is-step-2');
+
+                        $form.find('[data-group-done]').removeAttr('data-group-done');
+                    }
+                });
+
+                $('.modal.form-order').on('submit', 'form', function(e) {
+                    var $modal = $(e.currentTarget).closest('.modal');
+
+                    setTimeout(function () {
+                        BF.modal.open('#done');
+                    }, 1000);
+                });
+
+                $('.modal.form-order').on('change', '#form-extend', function(e) {
+                    var value = !!$(e.currentTarget).attr('checked');
+                    var $part = $(e.currentTarget).closest('form').find('.form-part-2');
+
+                    $part.toggleClass('hidden', !value);
+
+                    $part.find('.form-field').attr('data-validate', value);
+                });
+
+                $('.modal.form-order').on('change', 'input[name="accept"]', function(e) {
+                    var value = !!$(e.currentTarget).attr('checked');
+                    var $btn = $(e.currentTarget).closest('form').find('.form-submit .btn');
+
+                    if (value) {
+                        $btn.removeAttr('disabled');
+                    } else {
+                        $btn.attr('disabled', 'disabled');
+                    }
+                });
+
+            },
+
+            set_fields: function($form) {
+                var $done_fields = $form.find('.field-list');
+                var form_extended = $form.find('#form-extend').attr('checked');
+
+                $done_fields.empty();
+                $form.find('input, textarea').each(function(index, field) {
+                    var is_group = false;
+
+                    var $field = $(field);
+                    var placeholder;
+                    var text;
+
+                    // is group
+                    if ($field.closest('.form-field-group')[0]) {
+                        var $group = $field.closest('.form-field-group');
+                        if ($group.attr('data-group-done')) return;
+                        $group.attr('data-group-done', true);
+
+                        is_group = true;
+                        placeholder = $group.find('label').text();
+
+                        if (!form_extended && $group.attr('data-empty') == 'true') {
+                            text = 'gleiche wie oben';
+                        } else {
+                            text = [];
+                            $group.find('input, textarea').each(function(index, item) {
+                                text.push($(item).val() || '-');
+                            });
+                            text = text.join(', ');
+                        }
+                    }
+                    else {
+                        placeholder = $field.attr('placeholder');
+
+                        if (!form_extended && $field.closest('.form-field').attr('data-empty') == 'true') {
+                            text = 'gleiche wie oben';
+                        } else {
+                            text = $field.val() || '-';
+                        }
+                    }
+
+                    if (placeholder) {
+                        var $item = $(['<div class="field">',
+                            '<div class="title"></div>',
+                            '<div class="text"></div>',
+                        '</div>'].join(''));
+
+                        $item.find('.title').text(placeholder);
+                        $item.find('.text').text(text);
+                        $done_fields.append($item);
+                    }
+                });
+            },
+
+            check: function($form) {
+                var result = false;
                 var $fields = $form.find('.form-field');
                 $fields.removeClass('error');
 
@@ -219,6 +384,9 @@
                             case 'email':
                                 correct = value.match(/.+@.+\..+/i);
                                 break;
+                            case 'checked':
+                                correct = !!$field.find('input[type="checkbox"]').attr('checked');
+                                break;
                             default:
                                 correct = value.length > 0;
                         }
@@ -229,32 +397,43 @@
 
                     if ( !correct ) {
                         $field.addClass('error');
-                        hasError = true;
-                        return false;
+                        result = true;
                     }
+
                 });
 
-                if (hasError) {
-                    return;
-                }
+                return result;
+            }
+        },
 
-                var form = $form.serialize();
+        modal: {
+            open: function(modal) {
+                this.close();
 
-                // AJAX
-                var req = $.ajax(
-                {
-                    url: $form.attr('action'),
-                    type: 'GET',
-                    dataType: 'json',
-                    data: form+'&is_ajax=true'
-                });
+                var $modal = $('.modal-list').find(modal);
 
-                req.always(function(data)
-                {
-                    $form.get(0).reset();
-                    $form.addClass('sended');
-                });
-            });
+                if (!$modal.length) return;
+
+                $modal.find('form').removeClass('is-step-1 is-step-2')
+                $modal.find('[data-group-done]').removeAttr('data-group-done');
+                $modal.find('form .form-field').removeClass('error');
+
+                $('body').css('overflow', 'hidden');
+                $('.modal-list').addClass('overlay');
+                $modal.addClass('show');
+            },
+
+            close: function() {
+                var $modal = $('.modal-list').find('.modal');
+
+                $modal.find('form').removeClass('is-step-1 is-step-2')
+                $modal.find('[data-group-done]').removeAttr('data-group-done');
+                $modal.find('form .form-field').removeClass('error');
+
+                $('body').css('overflow', '');
+                $modal.removeClass('show done');
+                $('.modal-list').removeClass('overlay');
+            }
         },
 
         vendor: function() {
@@ -262,7 +441,7 @@
 
             svg4everybody();
 
-            $('.slider').lightSlider({
+            $('.b_slider .slider').lightSlider({
                 adaptiveHeight: true,
                 item: 1,
                 slideMargin: 0,
@@ -273,6 +452,22 @@
                 pager: true,
                 galleryMargin: 0,
                 enableDrag: false
+            });
+
+            var angeslider = $('.b_ange_slider .slider').lightSlider({
+                adaptiveHeight: true,
+                item: 1,
+                slideMargin: 0,
+                controls: false,
+                pager: false,
+                enableDrag: true
+            });
+
+            $('.slider-preview').on('click', 'li', function(e) {
+                var index = $(e.currentTarget).index();
+                if (angeslider) {
+                    angeslider.goToSlide(index);
+                }
             });
 
             $('.lg-init').lightGallery({

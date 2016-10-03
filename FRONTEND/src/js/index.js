@@ -136,173 +136,342 @@
     $(function() {
         BF.init();
     });
-})(window, jQuery);
 
-window.BF = {
-    init: function() {
-        var ua = navigator.userAgent;
-        this.is_touch = 'ontouchstart' in window; // это тач устройство?
-        this.is_webkit       = ua.match(/webkit/i);
-        this.is_firefox      = ua.match(/gecko/i);
-        this.is_newer_ie     = ua.match(/msie (9|([1-9][0-9]))/i);
-        this.is_older_ie     = ua.match(/msie/i) && !this.is_newer_ie;
-        this.is_ancient_ie   = ua.match(/msie 6/i);
-        this.is_ie           = this.is_ancient_ie || this.is_older_ie || this.is_newer_ie;
-        this.is_mobile_ie    = ua.indexOf('IEMobile') !== -1;
-        this.is_mobile       = ua.match(/mobile/i);
-        this.is_desktop       = !this.is_mobile;
-        this.is_OSX          = ua.match(/(iPad|iPhone|iPod|Macintosh)/g) ? true : false;
-        this.is_EDGE 		= /Edge\/12./i.test(ua);
+    window.BF = {
+        init: function() {
+            var ua = navigator.userAgent;
+            this.is_touch = 'ontouchstart' in window; // это тач устройство?
+            this.is_webkit       = ua.match(/webkit/i);
+            this.is_firefox      = ua.match(/gecko/i);
+            this.is_newer_ie     = ua.match(/msie (9|([1-9][0-9]))/i);
+            this.is_older_ie     = ua.match(/msie/i) && !this.is_newer_ie;
+            this.is_ancient_ie   = ua.match(/msie 6/i);
+            this.is_ie           = this.is_ancient_ie || this.is_older_ie || this.is_newer_ie;
+            this.is_mobile_ie    = ua.indexOf('IEMobile') !== -1;
+            this.is_mobile       = ua.match(/mobile/i);
+            this.is_desktop       = !this.is_mobile;
+            this.is_OSX          = ua.match(/(iPad|iPhone|iPod|Macintosh)/g) ? true : false;
+            this.is_EDGE 		= /Edge\/12./i.test(ua);
 
-        if (this.is_desktop) {
-            this.parallax();
-        }
+            if (this.is_desktop) {
+                this.parallax();
+            }
 
-        this.events();
-        this.vendor();
-    },
+            this.form.init();
+            this.events();
+            this.vendor();
+        },
 
-    events: function() {
-        var self = this;
+        events: function() {
+            var self = this;
 
-        // Scroll
-        var $header = $('.b_header');
-        var $menu = $header.find('.menu-holder');
+            // Scroll
+            var $header = $('.b_header');
+            var $menu = $header.find('.menu-holder');
 
-        var headerOverflow = $header.hasClass('overflow');
+            var headerOverflow = $header.hasClass('overflow');
 
-        if ( headerOverflow ) {
-            var coverH = $('.b_cover').outerHeight() || 0;
-            $(window).on('scroll', function() {
-                var st = window.pageYOffset;
-                $header.toggleClass('floating', (st >= Math.max(coverH - 300, 0)));
-                $header.toggleClass('animate', (st >= Math.max((coverH - 200), 0)));
-                $header.toggleClass('show', (st >= Math.max(coverH, 0)));
+            if ( headerOverflow ) {
+                var coverH = $('.b_cover').outerHeight() || 0;
+                $(window).on('scroll', function() {
+                    var st = window.pageYOffset;
+                    $header.toggleClass('floating', (st >= Math.max(coverH - 300, 0)));
+                    $header.toggleClass('animate', (st >= Math.max((coverH - 200), 0)));
+                    $header.toggleClass('show', (st >= Math.max(coverH, 0)));
+                });
+            } else {
+                $header.addClass('floating show');
+            }
+
+            // burger
+            $('body').on('click touchstart', function(e) {
+                if ($(e.target).is('.burger')) {
+                    e.preventDefault();
+                    $menu.toggleClass('show');
+                }
+                else if ($(e.target).closest('.b_header').length === 0) {
+                    $menu.removeClass('show');
+                }
             });
-        } else {
-            $header.addClass('floating show');
-        }
 
-        // burger
-        $('body').on('click touchstart', function(e) {
-            if ($(e.target).is('.burger')) {
+            // gallery
+            $('.gallery-wrap').on('click', '.show-more', function(e){
                 e.preventDefault();
-                $menu.toggleClass('show');
-            }
-            else if ($(e.target).closest('.b_header').length === 0) {
-                $menu.removeClass('show');
-            }
-        });
 
-        // gallery
-        $('.b_gallery').find('.gallery-wrap').on('click', '.show-more', function(e){
-            e.preventDefault();
+                $(e.currentTarget).closest('.gallery-wrap').toggleClass('extend');
+            });
 
-            $(e.currentTarget).closest('.gallery-wrap').toggleClass('extend');
-        });
+            $('.spoilers').on('click', '.spoiler > .title', function(e){
+                $(e.currentTarget).closest('.spoiler').toggleClass('extend');
+            });
 
-        $('form').on('submit', function(e) {
-            e.preventDefault();
+            // tarifs
+            $('.tarif-card').on('click', '.btn', function(e) {
+                e.preventDefault();
+                var modal = $(e.currentTarget).attr('href');
 
-            var hasError = false;
-            var $form = $(e.currentTarget);
-            var $fields = $form.find('.form-field');
-            $fields.removeClass('error');
+                BF.modal.open(modal);
+            });
 
-            $fields.each(function(index, field) {
-                var $field = $(field);
-                var validate = $(field).data('validate');
-                var correct = false;
-                var value = $field.find('input, textarea').val();
+            // modals
+            $('.modal-list').on('click.close-by-button', 'a.close, a.cancel', function(e) {
+                e.preventDefault();
+                BF.modal.close();
+            });
 
-                if (validate) {
-                    switch (validate) {
-                        case 'email':
-                            correct = value.match(/.+@.+\..+/i);
-                            break;
-                        default:
-                            correct = value.length > 0;
+            $('.modal-list').on('click.close-on-overlay', function(e) {
+                if (e.target == e.currentTarget) {
+                    e.preventDefault();
+                    BF.modal.close();
+                }
+            });
+        },
+
+        form: {
+            init: function() {
+                $('form').on('click', '.form-field', function(e) {
+                    $(e.currentTarget).removeClass('error');
+                });
+
+                // form ajax submit
+                $('form.ajax-send').on('submit', function(e) {
+                    e.preventDefault();
+
+                    var hasError = false;
+                    var $form = $(e.currentTarget);
+
+                    hasError = BF.form.check($form);
+
+                    if (hasError) {
+                        e.stopPropagation();
+                        return false;
                     }
-                }
-                else {
-                    correct = true;
-                }
 
-                if ( !correct ) {
-                    $field.addClass('error');
-                    hasError = true;
-                    return false;
-                }
-            });
+                    var form_data = $form.serialize();
 
-            if (hasError) {
-                return;
+                    // AJAX
+                    var req = $.ajax(
+                    {
+                        url: $form.attr('action'),
+                        type: $form.attr('method'),
+                        dataType: 'json',
+                        data: form_data
+                    });
+
+                    req.always(function(data) {
+                        $form.get(0).reset();
+                        $form.addClass('sended');
+                    });
+                });
+
+                // form order send form (contact form 7)
+                // steps
+                $('.modal.form-order').on('click', 'a.select-step', e => {
+                    var step = $(e.currentTarget).attr('href').replace('#', '');
+
+                    var $form = $(e.currentTarget).closest('form');
+
+                    if (step == 'next') {
+                        BF.form.set_fields($form);
+                        var hasError = BF.form.check($form);
+                        if (hasError) return;
+
+                        $form.addClass('is-step-2').removeClass('is-step-1');
+                    } else {
+                        $form.addClass('is-step-1').removeClass('is-step-2');
+                    }
+                });
+
+                $('.modal.form-order').on('submit', 'form', function(e) {
+                    var $modal = $(e.currentTarget).closest('.modal');
+
+                    setTimeout(function () {
+                        BF.modal.open('order-done');
+                    }, 1000);
+                });
+
+            },
+
+            set_fields: function($form) {
+                var $done_fields = $form.find('.field-list');
+                var form_extended = $form.find('#form-extend').attr('checked');
+
+                $done_fields.empty();
+                $form.find('input, textarea').each(function(index, field) {
+                    var is_group = false;
+
+                    var $field = $(field);
+                    var placeholder;
+                    var text;
+
+                    // is group
+                    if ($field.closest('.form-field-group')[0]) {
+                        var $group = $field.closest('.form-field-group');
+                        if ($group.attr('data-group-done')) return;
+                        $group.attr('data-group-done', true);
+
+                        is_group = true;
+                        placeholder = $group.find('label').text();
+
+                        if (!form_extended && $group.attr('data-empty') == 'true') {
+                            text = 'gleiche wie oben';
+                        } else {
+                            text = [];
+                            $group.find('input, textarea').each(function(index, item) {
+                                text.push($(item).val() || '-');
+                            });
+                            text = text.join(', ');
+                        }
+                    }
+                    else {
+                        placeholder = $field.attr('placeholder');
+
+                        if (!form_extended && $field.closest('.form-field').attr('data-empty') == 'true') {
+                            text = 'gleiche wie oben';
+                        } else {
+                            text = $field.val() || '-';
+                        }
+                    }
+
+                    if (placeholder) {
+                        var $item = $(['<div class="field">',
+                            '<div class="title"></div>',
+                            '<div class="text"></div>',
+                        '</div>'].join(''));
+
+                        $item.find('.title').text(placeholder);
+                        $item.find('.text').text(text);
+                        $done_fields.append($item);
+                    }
+                });
+            },
+
+            check: function($form) {
+                var result = false;
+                var $fields = $form.find('.form-field');
+                $fields.removeClass('error');
+
+                $fields.each(function(index, field) {
+                    var $field = $(field);
+                    var validate = $(field).data('validate');
+                    var correct = false;
+                    var value = $field.find('input, textarea').val();
+
+                    if (validate) {
+                        switch (validate) {
+                            case 'email':
+                                correct = value.match(/.+@.+\..+/i);
+                                break;
+                            case 'checked':
+                                correct = !!$field.find('input[type="checkbox"]').attr('checked');
+                                break;
+                            default:
+                                correct = value.length > 0;
+                        }
+                    }
+                    else {
+                        correct = true;
+                    }
+
+                    if ( !correct ) {
+                        $field.addClass('error');
+                        result = true;
+                    }
+
+                });
+
+                return result;
             }
+        },
 
-            var form = $form.serialize();
+        modal: {
+            open: function(modal) {
+                this.close();
 
-            // AJAX
-            var req = $.ajax(
-            {
-                url: $form.attr('action'),
-                type: 'GET',
-                dataType: 'json',
-                data: form+'&is_ajax=true'
+                var $modal = $('.modal-list').find(modal);
+
+                if (!$modal.length) return;
+
+                $('body').css('overflow', 'hidden');
+                $('.modal-list').addClass('overlay');
+                $modal.addClass('show');
+            },
+
+            close: function() {
+                var $modal = $('.modal-list').find('.modal');
+
+                $('body').css('overflow', '');
+                $modal.removeClass('show done');
+                $modal.find('form').removeClass('is-step-1 is-step-2')
+
+                $('.modal-list').removeClass('overlay');
+
+                $modal.find('form .form-field').removeClass('error');
+            }
+        },
+
+        vendor: function() {
+            var self = this;
+
+            svg4everybody();
+
+            $('.b_slider .slider').lightSlider({
+                adaptiveHeight: true,
+                item: 1,
+                slideMargin: 0,
+                loop: true,
+                auto: true,
+                pause: 10000,
+                controls: false,
+                pager: true,
+                galleryMargin: 0,
+                enableDrag: false
             });
 
-            req.always(function(data)
-            {
-                $form.get(0).reset();
-                $form.addClass('sended');
+            var angeslider = $('.b_ange_slider .slider').lightSlider({
+                adaptiveHeight: true,
+                item: 1,
+                slideMargin: 0,
+                controls: false,
+                pager: false,
+                enableDrag: true
             });
-        });
-    },
 
-    vendor: function() {
-        var self = this;
+            $('.slider-preview').on('click', 'li', function(e) {
+                var index = $(e.currentTarget).index();
+                if (angeslider) {
+                    angeslider.goToSlide(index);
+                }
+            });
 
-        svg4everybody();
+            $('.lg-init').lightGallery({
+                cssEasing : 'cubic-bezier(0.25, 0, 0.25, 1)',
+                preload: 4,
+                download: false,
+            });
 
-        $('.slider').lightSlider({
-            adaptiveHeight: true,
-            item: 1,
-            slideMargin: 0,
-            loop: true,
-            auto: true,
-            pause: 10000,
-            controls: false,
-            pager: true,
-            galleryMargin: 0,
-            enableDrag: false
-        });
+            if (self.is_desktop) {
+                $('#video-bg').YTPlayer();
+            }
+        },
 
-        $('.lg-init').lightGallery({
-            cssEasing : 'cubic-bezier(0.25, 0, 0.25, 1)',
-            preload: 4,
-            download: false,
-        });
+        parallax: function() {
+            var $bg = $('.bg[data-parallax="true"]');
+            var bg = $bg[0];
 
-        if (self.is_desktop) {
-            $('#video-bg').YTPlayer();
-        }
-    },
+            if (!bg) return;
+            var start = $bg.offset().top;
+            var factor = 0.3;
 
-    parallax: function() {
-        var $bg = $('.bg[data-parallax="true"]');
-        var bg = $bg[0];
+            (function loop() {
+                animateParallax();
+                requestAnimationFrame(loop);
+            })();
 
-        if (!bg) return;
-        var start = $bg.offset().top;
-        var factor = 0.3;
-
-        (function loop() {
-            animateParallax();
-            requestAnimationFrame(loop);
-        })();
-
-        function animateParallax() {
-            var y = (window.pageYOffset - start) * factor;
-            bg.style.transform = "translate3d(0," + y + "px,0)";
+            function animateParallax() {
+                var y = (window.pageYOffset - start) * factor;
+                bg.style.transform = "translate3d(0," + y + "px,0)";
+            }
         }
     }
-}
+})(window, jQuery);
