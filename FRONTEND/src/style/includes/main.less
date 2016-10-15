@@ -218,6 +218,9 @@
 .b_cover {
     color: @light;
     position: relative;
+    height: 50vw;
+    min-height: 500px;
+    max-height: 1300px;
 
     .bg {
         width: 100%;
@@ -233,14 +236,16 @@
     }
 
     .container-fluid {
+        height: 100%;
         background: fade(@dark, 50%);
+        display: flex;
+        align-items: center;
     }
 
     .content {
         text-align: center;
         max-width: 780px;
-        margin: 0 auto;
-        padding: 250px 0;
+        margin: auto;
 
         .screen-m({
             padding: 165px 0;
@@ -288,6 +293,16 @@
             }
         }
     }
+
+    .screen-mts({
+        height: 100vh;
+
+        .content {
+            .inline-list {
+                margin-top: 20px;
+            }
+        }
+    });
 }
 
 .b_form1 {

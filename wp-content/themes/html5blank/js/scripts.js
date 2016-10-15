@@ -277,10 +277,22 @@
                         if (hasError) return;
 
                         $form.addClass('is-step-2').removeClass('is-step-1');
+
+                        $form.find('input[name], textarea').each(function(index, el) {
+                            if (!$(el).val()) {
+                                $(el).val('-');
+                            }
+                        });
                     } else {
                         $form.addClass('is-step-1').removeClass('is-step-2');
 
                         $form.find('[data-group-done]').removeAttr('data-group-done');
+
+                        $form.find('input[name], textarea').each(function(index, el) {
+                            if ($(el).val() == '-') {
+                                $(el).val('');
+                            }
+                        });
                     }
                 });
 
@@ -298,7 +310,12 @@
 
                     $part.toggleClass('hidden', !value);
 
-                    $part.find('.form-field').attr('data-validate', value);
+                    if (value) {
+                        $part.find('.form-field').not('[data-validate="false"]').attr('data-validate', true);
+                    } else {
+                        $part.find('.form-field').not('[data-validate="false"]').removeAttr('data-validate');
+                    }
+
                 });
 
                 $('.modal.form-order').on('change', 'input[name="accept"]', function(e) {
@@ -311,60 +328,69 @@
                         $btn.attr('disabled', 'disabled');
                     }
                 });
-
             },
 
             set_fields: function($form) {
                 var $done_fields = $form.find('.field-list');
                 var form_extended = $form.find('#form-extend').attr('checked');
 
+                var arr = [
+                    { name: 'firma', el: $form.find('[name="firma"]') },
+                    { name: 'name', el: $form.find('[name="name"]') },
+                    { name: 'email', el: $form.find('[name="email"]') },
+                    { name: 'tel', el: $form.find('[name="tel"]') },
+                    { name: 'addr', el: $form.find('[name="haus"], [name="plz"]') },
+
+                    { name: 'firma2', el: $form.find('[name="firma2"]') },
+                    { name: 'name2', el: $form.find('[name="name2"]') },
+                    { name: 'addr2', el: $form.find('[name="haus2"], [name="plz2"]') },
+
+                    { name: 'comment', el: $form.find('[name="comment"]') }
+                ];
+
                 $done_fields.empty();
-                $form.find('input, textarea').each(function(index, field) {
+                arr.forEach(function(field) {
                     var is_group = false;
 
-                    var $field = $(field);
+                    var $field = field.el;
                     var placeholder;
                     var text;
 
-                    // is group
-                    if ($field.closest('.form-field-group')[0]) {
-                        var $group = $field.closest('.form-field-group');
-                        if ($group.attr('data-group-done')) return;
-                        $group.attr('data-group-done', true);
+                    if (field.name == 'addr' || field.name == 'addr2') {
+                        placeholder = $field.closest('.form-field-group').find('label').text();
 
-                        is_group = true;
-                        placeholder = $group.find('label').text();
-
-                        if (!form_extended && $group.attr('data-empty') == 'true') {
-                            text = 'gleiche wie oben';
-                        } else {
-                            text = [];
-                            $group.find('input, textarea').each(function(index, item) {
-                                text.push($(item).val() || '-');
-                            });
-                            text = text.join(', ');
+                        if ($field.eq(0).val() && $field.eq(1).val()) {
+                            text = $field.eq(0).val() + ', ' + $field.eq(1).val();
                         }
+
+                        if (field.name == 'addr2' && !form_extended) {
+                            text = '-';
+                        }
+
                     }
                     else {
                         placeholder = $field.attr('placeholder');
-
-                        if (!form_extended && $field.closest('.form-field').attr('data-empty') == 'true') {
-                            text = 'gleiche wie oben';
-                        } else {
-                            text = $field.val() || '-';
-                        }
+                        text = $field.val();
                     }
 
-                    if (placeholder) {
-                        var $item = $(['<div class="field">',
-                            '<div class="title"></div>',
-                            '<div class="text"></div>',
-                        '</div>'].join(''));
-
-                        $item.find('.title').text(placeholder);
-                        $item.find('.text').text(text);
-                        $done_fields.append($item);
+                    if (!text) {
+                        text = '-';
                     }
+                    placeholder = placeholder.replace(/\(optional\)|\*/gi, '');
+
+                    // skip this hidden fields
+                    if (!form_extended && field.name != 'addr2' && $field.closest('.form-field').attr('data-empty') == 'true') {
+                        return;
+                    }
+
+                    var $item = $(['<div class="field">',
+                        '<div class="title"></div>',
+                        '<div class="text"></div>',
+                    '</div>'].join(''));
+
+                    $item.find('.title').text(placeholder);
+                    $item.find('.text').text(text);
+                    $done_fields.append($item);
                 });
             },
 
@@ -375,11 +401,11 @@
 
                 $fields.each(function(index, field) {
                     var $field = $(field);
-                    var validate = $(field).data('validate');
+                    var validate = $(field).attr('data-validate');
                     var correct = false;
                     var value = $field.find('input, textarea').val();
 
-                    if (validate) {
+                    if (validate && validate != 'false') {
                         switch (validate) {
                             case 'email':
                                 correct = value.match(/.+@.+\..+/i);
@@ -472,8 +498,9 @@
 
             $('.lg-init').lightGallery({
                 cssEasing : 'cubic-bezier(0.25, 0, 0.25, 1)',
-                preload: 4,
+                preload: 2,
                 download: false,
+                hideBarsDelay: 500
             });
 
             if (self.is_desktop) {
