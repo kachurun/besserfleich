@@ -2,31 +2,42 @@
 
 	<!-- article -->
 	<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+		<div class="content-holder">
+			<!-- post thumbnail -->
+			<div class="image-holder">
+				<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>" style="background-image: url(<?php the_post_thumbnail_url(array(520,520)); ?>)"></a>
+			</div>
+			<!-- /post thumbnail -->
 
-		<!-- post thumbnail -->
-		<?php if ( has_post_thumbnail()) : // Check if thumbnail exists ?>
-			<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
-				<?php the_post_thumbnail(array(120,120)); // Declare pixel size you need inside the array ?>
-			</a>
-		<?php endif; ?>
-		<!-- /post thumbnail -->
+			<div class="post-content">
+				<!-- post title -->
+				<h2 class="post-title">
+					<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a>
+				</h2>
+				<!-- /post title -->
 
-		<!-- post title -->
-		<h2>
-			<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>"><?php the_title(); ?></a>
-		</h2>
-		<!-- /post title -->
+				<!-- post details -->
+				<div class="post-date">
+					<span><?php the_time(get_option('date_format')); ?></span>
+					<span>
+						<?php
+							$categories = get_the_category();
+							if ( ! empty( $categories ) ) {
+								echo '<a href="'. esc_url( get_category_link( $categories[0]->term_id ) ). '">' . esc_html( $categories[0]->name ) . '</a>';
+							}
+						?>
+					</span>
+				</div>
+				<!-- /post details -->
+				<div class="post-text">
+					<?php html5wp_excerpt('html5wp_long_post'); // Build your custom callback length in functions.php ?>
+				</div>
 
-		<!-- post details -->
-		<span class="date"><?php the_time('F j, Y'); ?> <?php the_time('g:i a'); ?></span>
-		<span class="author"><?php _e( 'Published by', 'html5blank' ); ?> <?php the_author_posts_link(); ?></span>
-		<span class="comments"><?php if (comments_open( get_the_ID() ) ) comments_popup_link( __( 'Leave your thoughts', 'html5blank' ), __( '1 Comment', 'html5blank' ), __( '% Comments', 'html5blank' )); ?></span>
-		<!-- /post details -->
-
-		<?php html5wp_excerpt('html5wp_index'); // Build your custom callback length in functions.php ?>
-
-		<?php edit_post_link(); ?>
-
+				<div class="btn-wrap">
+					<a class="btn" href="<?php the_permalink(); ?>">Zum Artikel</a>
+				</div>
+			</div>
+		</div>
 	</article>
 	<!-- /article -->
 

@@ -22,7 +22,7 @@ var path = {
     build: {
         html: 'build/',
         js: 'build/js/',
-        css: 'build/css/',
+        css: '../wp-content/themes/html5blank/',
         img: 'build/img/',
         fonts: 'build/fonts/',
         vendor: 'build/vendor/'

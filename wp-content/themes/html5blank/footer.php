@@ -15,7 +15,7 @@
 									    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_fa951d9bc9015dfe7fd775c90_3ebe0260f5" tabindex="-1" value=""></div>
 									</div>
 									<div class="form-submit">
-										<input type="submit" value="Absenden" name="subscribe" class="button">
+										<button name="subscribe" class="button">Absenden</button>
 									</div>
 								</div>
 

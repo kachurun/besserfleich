@@ -166,6 +166,12 @@ function add_slug_to_body_class($classes)
     return $classes;
 }
 
+function SearchFilter($query) {
+    if ($query->is_search) {
+        $query->set('post_type', 'post');
+    }
+    return $query;
+}
 
 // Remove wp_head() injected Recent Comment styles
 function my_remove_recent_comments_style()
@@ -197,9 +203,9 @@ function html5wp_index($length) // Create 20 Word Callback for Index page Excerp
 }
 
 // Create 40 Word Callback for Custom Post Excerpts, call using html5wp_excerpt('html5wp_custom_post');
-function html5wp_custom_post($length)
+function html5wp_long_post($length)
 {
-    return 40;
+    return 260;
 }
 
 // Create the Custom Excerpts callback
@@ -220,10 +226,32 @@ function html5wp_excerpt($length_callback = '', $more_callback = '')
 }
 
 // Custom View Article link to Post
-function html5_blank_view_article($more)
+// function html5_blank_view_article($more)
+// {
+//     global $post;
+//     return '... <a class="view-article" href="' . get_permalink($post->ID) . '">' . __('View Article', 'html5blank') . '</a>';
+// }
+
+function my_excerpt($text, $len = 55)
 {
-    global $post;
-    return '... <a class="view-article" href="' . get_permalink($post->ID) . '">' . __('View Article', 'html5blank') . '</a>';
+
+    $text = strip_shortcodes( $text );
+
+    $text = apply_filters('the_content', $text);
+    $text = str_replace(']]>', ']]&gt;', $text);
+    $text = strip_tags($text);
+    $excerpt_length = apply_filters('excerpt_length', $len);
+    $excerpt_more = apply_filters('excerpt_more', ' ' . '...');
+    $words = preg_split("/[\n\r\t ]+/", $text, $excerpt_length + 1, PREG_SPLIT_NO_EMPTY);
+    if ( count($words) > $excerpt_length ) {
+            array_pop($words);
+            $text = implode(' ', $words);
+            $text = $text . $excerpt_more;
+    } else {
+            $text = implode(' ', $words);
+    }
+
+    return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
 }
 
 // Remove Admin bar
@@ -337,6 +365,7 @@ remove_action('wp_head', 'rel_canonical');
 remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 
 // Add Filters
+add_filter('pre_get_posts','SearchFilter');
 add_filter('avatar_defaults', 'html5blankgravatar'); // Custom Gravatar in Settings > Discussion
 add_filter('body_class', 'add_slug_to_body_class'); // Add slug to body class (Starkers build)
 add_filter('widget_text', 'do_shortcode'); // Allow shortcodes in Dynamic Sidebar
@@ -348,7 +377,7 @@ add_filter('wp_nav_menu_args', 'my_wp_nav_menu_args'); // Remove surrounding <di
 add_filter('the_category', 'remove_category_rel_from_category_list'); // Remove invalid rel attribute
 add_filter('the_excerpt', 'shortcode_unautop'); // Remove auto <p> tags in Excerpt (Manual Excerpts only)
 add_filter('the_excerpt', 'do_shortcode'); // Allows Shortcodes to be executed in Excerpt (Manual Excerpts only)
-add_filter('excerpt_more', 'html5_blank_view_article'); // Add 'View Article' button instead of [...] for Excerpts
+// add_filter('excerpt_more', 'html5_blank_view_article'); // Add 'View Article' button instead of [...] for Excerpts
 add_filter('show_admin_bar', 'remove_admin_bar'); // Remove Admin bar
 add_filter('style_loader_tag', 'html5_style_remove'); // Remove 'text/css' from enqueued stylesheet
 add_filter('post_thumbnail_html', 'remove_thumbnail_dimensions', 10); // Remove width and height dynamic attributes to thumbnails
