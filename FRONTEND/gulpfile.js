@@ -21,7 +21,7 @@ var gulp = require('gulp'),
 var path = {
     build: {
         html: 'build/',
-        js: 'build/js/',
+        js: '../wp-content/themes/html5blank/js/',
         css: '../wp-content/themes/html5blank/',
         img: 'build/img/',
         fonts: 'build/fonts/',
@@ -86,7 +86,7 @@ gulp.task('js:build', function () {
         .pipe(babel())
         .pipe(rigger())
         // .pipe(uglify())
-        .pipe(concat("all.js"))
+        .pipe(concat("scripts.js"))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(path.build.js))
         .pipe(reload({stream: true}));

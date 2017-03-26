@@ -6,10 +6,17 @@
         </div>
 
 		<div class="container cat-holder">
-			<div class="categories-list">
-				<?php wp_list_categories(array('title_li' => '')); ?>
-			</div>
-			<div class="search-bar">
+            <?php
+                if (count(get_categories()) > 1) {
+                    ?>
+                    <div class="categories-list">
+                        <?php wp_list_categories(array('title_li' => '')); ?>
+                    </div>
+                    <?php
+                }
+            ?>
+
+    		<div class="search-bar">
 				<?php get_search_form(); ?>
 			</div>
 		</div>

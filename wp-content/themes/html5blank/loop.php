@@ -46,7 +46,7 @@
 <?php else: ?>
 
 	<!-- article -->
-	<article>
+	<article id="empty-post">
 		<h2><?php _e( 'Sorry, nothing to display.', 'html5blank' ); ?></h2>
 	</article>
 	<!-- /article -->

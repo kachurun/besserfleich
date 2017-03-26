@@ -120,6 +120,52 @@ function html5blank_styles()
     wp_enqueue_style('lightslider'); // Enqueue it!
 }
 
+//Adding the Open Graph in the Language Attributes
+function add_opengraph_doctype( $output ) {
+		return $output . ' xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml"';
+	}
+add_filter('language_attributes', 'add_opengraph_doctype');
+
+//Lets add Open Graph Meta Info
+
+function insert_opengraph() {
+    global $post;
+
+    if(!has_post_thumbnail( $post->ID )) { //the post does not have featured image, use a default image
+        $img_src = "http://besserfleisch.de/wp-content/uploads/2016/07/160726_hh_0260.jpg";
+    }
+    else{
+        $thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'full' );
+        $img_src = esc_attr( $thumbnail_src[0] );
+    }
+
+    if($post->post_content) {
+        $excerpt = my_excerpt($post->post_content, 25);
+    } else {
+        $excerpt = get_bloginfo('description');
+    }
+    ?>
+
+    <meta property="fb:app_id" content="760905590739970"/>
+    <meta property="og:description" content="<?php echo $excerpt; ?>"/>
+    <meta property="og:url" content="<?php echo the_permalink(); ?>"/>
+    <meta property="og:image" content="<?php echo $img_src; ?>"/>
+
+    <?php
+
+    if(is_single()) {
+        ?>
+        <meta property="og:title" content="<?php echo the_title(); ?>"/>
+        <meta property="og:type" content="article"/>
+        <?php
+    }
+    else {
+        ?>
+        <meta property="og:type" content="blog"/>
+        <?php
+    }
+}
+
 // Register HTML5 Blank Navigation
 function register_html5_menu()
 {
@@ -205,7 +251,7 @@ function html5wp_index($length) // Create 20 Word Callback for Index page Excerp
 // Create 40 Word Callback for Custom Post Excerpts, call using html5wp_excerpt('html5wp_custom_post');
 function html5wp_long_post($length)
 {
-    return 260;
+    return 50;
 }
 
 // Create the Custom Excerpts callback
@@ -226,11 +272,11 @@ function html5wp_excerpt($length_callback = '', $more_callback = '')
 }
 
 // Custom View Article link to Post
-// function html5_blank_view_article($more)
-// {
-//     global $post;
-//     return '... <a class="view-article" href="' . get_permalink($post->ID) . '">' . __('View Article', 'html5blank') . '</a>';
-// }
+function html5_blank_view_article($more)
+{
+    global $post;
+    return '...';
+}
 
 function my_excerpt($text, $len = 55)
 {
@@ -348,6 +394,8 @@ add_action('init', 'create_post_type_html5'); // Add our HTML5 Blank Custom Post
 add_action('widgets_init', 'my_remove_recent_comments_style'); // Remove inline Recent Comment Styles from wp_head()
 add_action('init', 'html5wp_pagination'); // Add our HTML5 Pagination
 add_action('init', 'html5blank_header_scripts'); // Add Custom Scripts to wp_head
+
+add_action('wp_head', 'insert_opengraph', 1);
 add_action('wp_footer', 'html5blank_footer_scripts'); // Add Custom Scripts to wp_head
 
 // Remove Actions
@@ -377,8 +425,8 @@ add_filter('wp_nav_menu_args', 'my_wp_nav_menu_args'); // Remove surrounding <di
 add_filter('the_category', 'remove_category_rel_from_category_list'); // Remove invalid rel attribute
 add_filter('the_excerpt', 'shortcode_unautop'); // Remove auto <p> tags in Excerpt (Manual Excerpts only)
 add_filter('the_excerpt', 'do_shortcode'); // Allows Shortcodes to be executed in Excerpt (Manual Excerpts only)
-// add_filter('excerpt_more', 'html5_blank_view_article'); // Add 'View Article' button instead of [...] for Excerpts
-add_filter('show_admin_bar', 'remove_admin_bar'); // Remove Admin bar
+add_filter('excerpt_more', 'html5_blank_view_article'); // Add 'View Article' button instead of [...] for Excerpts
+//add_filter('show_admin_bar', 'remove_admin_bar'); // Remove Admin bar
 add_filter('style_loader_tag', 'html5_style_remove'); // Remove 'text/css' from enqueued stylesheet
 add_filter('post_thumbnail_html', 'remove_thumbnail_dimensions', 10); // Remove width and height dynamic attributes to thumbnails
 add_filter('image_send_to_editor', 'remove_thumbnail_dimensions', 10); // Remove width and height dynamic attributes to post images

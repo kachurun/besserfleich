@@ -38,12 +38,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="<?php bloginfo('description'); ?>">
 
-	<meta property="og:url"           content="http://besserfleisch.de/" />
-	<meta property="og:type"          content="website" />
-	<meta property="og:title"         content="Saftiges Rindfleisch aus Weidehaltung" />
-	<meta property="og:description"   content="Einfach Hof anschauen und online bestellen" />
-	<meta property="og:image"         content="http://besserfleisch.de/wp-content/uploads/2016/07/160726_hh_0260.jpg" />
-
 	<!--[if lt IE 9]>
 	<script src="<?php echo esc_url( get_template_directory_uri() ); ?>/js/html5.js"></script>
 	<![endif]-->

@@ -184,7 +184,7 @@
             }
 
             // burger
-            $('body').on('click touchstart', function(e) {
+            $('body').on('click', function(e) {
                 if ($(e.target).is('.burger')) {
                     e.preventDefault();
                     $menu.toggleClass('show');

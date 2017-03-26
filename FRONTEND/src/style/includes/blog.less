@@ -6,12 +6,12 @@
         display: flex;
         flex-flow: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
 
         .categories-list {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 0 auto 0 0;
 
             .cat-item {
                 display: inline-block;
@@ -93,6 +93,7 @@
         });
 
         .screen-m({
+            display: none;
             flex-direction: column;
 
             .search-bar {
@@ -113,6 +114,7 @@
         font-size: 1.714rem; /* 24/14 */
         line-height: 1.333; /* 32/24 */
         margin-bottom: 4px;
+        margin-top: 0;
 
         a {
             color: inherit;
@@ -140,6 +142,13 @@
 }
 
 .b_article_list {
+    #empty-post {
+        text-align: center;
+        padding: 80px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
     .container {
         width: 100% !important;
         max-width: 100%;
@@ -181,6 +190,7 @@
 
         .post-content {
             padding-left: 30px;
+            max-width: 100%;
         }
 
         .post-text {
@@ -278,6 +288,7 @@
                 font-size: 12px;
                 margin: 4px 0 10px;
             }
+
             .post-content {
                 padding: 0;
             }
@@ -291,6 +302,7 @@
             font-size: 1.5rem; /* 24/16 */
             line-height: 1.667; /* 40/24 */
             color: inherit;
+            outline: none !important;
 
             &:hover {
                 color: @link;
@@ -303,12 +315,31 @@
         }
     }
 
+    article + .to-category {
+        margin: 10px 0;
+    }
+
     .post-title {
         margin-top: 24px;
     }
 
     .post-content {
-        padding-bottom: 48px;
+        // padding-bottom: 48px;
+    }
+
+    .social-buttons {
+        margin-bottom: 20px;
+        iframe {
+            height: 28px !important;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 3px 1px;
+        }
+    }
+
+    .post-content + .social-buttons {
+        margin-top: 28px;
+        margin-bottom: 0;
     }
 
     .screen-small-pc({

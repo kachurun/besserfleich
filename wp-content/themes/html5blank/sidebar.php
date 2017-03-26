@@ -17,6 +17,11 @@
 				foreach ($posts_array as $post) {
 					?>
 						<div class="post-item">
+							<?php if (has_post_thumbnail($post)) { ?>
+								<div class="post-image" style="margin-bottom: 15px">
+									<?php echo get_the_post_thumbnail($post); ?>
+								</div>
+							<?php } ?>
 							<div class="post-title">
 								<a href="<?php echo esc_url(get_permalink($post)); ?>">
 									<?php echo $post->post_title; ?>

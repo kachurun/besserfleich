@@ -9,7 +9,7 @@
 			<div class="categories-list">
 				<?php wp_list_categories(array('title_li' => '')); ?>
 			</div>
-			<div class="search">
+			<div class="search-bar">
 				<?php get_search_form(); ?>
 			</div>
 		</div>
